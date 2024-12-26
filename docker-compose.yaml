@@ -1,0 +1,52 @@
+version: '3.7'
+
+services:
+  db:
+    container_name: mongodb_rishka
+    image: mongo:latest
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: 'mongalie'
+    networks:
+      - backend_rishka
+
+  redis:
+    container_name: redis_rishka
+    image: redis:5.0
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend_rishka
+
+  elasticsearch:
+    image: elasticsearch:8.7.1
+    container_name: elasticsearch
+    restart: always
+    ports:
+      - 9200:9200
+    environment:
+      - discovery.type=single-node
+      - network.host=0.0.0.0
+      - xpack.security.enabled=false
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - backend_rishka
+
+volumes:
+  mongodb_data:
+  redis_data:
+  elasticsearch_data:
+
+networks:
+  backend_rishka:
