@@ -32,7 +32,7 @@ export class GenreController {
     return { genre };
   }
 
-  @Post('')
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   @Auth('admin')
   async create(@Body() dto: GenreDto) {

@@ -25,7 +25,7 @@ export class PremiumController {
     return { payment };
   }
 
-  @Get('/exist')
+  @Get('exist')
   @Auth()
   async existPremuim(@User('_id') userId: Types.ObjectId) {
     const premium = await this.premiumService.existPremium(userId);

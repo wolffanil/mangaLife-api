@@ -12,7 +12,7 @@ export enum EnumMangaStatus {
 export enum EnumMangaType {
   MANGA = 'Манга',
   MANHWA = 'Манхва',
-  MANHUA = 'Манхва',
+  MANHUA = 'Манхуа',
   RUMANGA = 'Руманга',
 }
 
