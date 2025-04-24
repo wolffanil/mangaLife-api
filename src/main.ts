@@ -5,6 +5,7 @@ import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
+import { ValidationException } from './validation.exception';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -16,6 +17,7 @@ async function bootstrap() {
   }
 
   app.use(helmet());
+  app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
   app.use(cookieParser());
 
   // app.use(csurf());
@@ -36,6 +38,26 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      exceptionFactory: (errors) => {
+        const formatErrors = (errors, parentPath = '') => {
+          return errors.flatMap((error) => {
+            if (error.children?.length) {
+              return formatErrors(
+                error.children,
+                `${parentPath}${error.property}.`,
+              );
+            }
+
+            return {
+              field: `${parentPath}${error.property}`,
+              message: Object.values(error.constraints).at(-1),
+            };
+          });
+        };
+
+        const formattedErrors = formatErrors(errors);
+        return new ValidationException(formattedErrors);
+      },
     }),
   );
 

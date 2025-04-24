@@ -5,7 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Type,
 } from '@nestjs/common';
 import { PremiumService } from './premium.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';

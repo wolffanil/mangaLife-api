@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document, mongo, Types } from 'mongoose';
+import mongoose, { Document, Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Manga } from 'src/manga/schemas/manga.model';
 
@@ -25,7 +25,7 @@ export class User extends Document {
   @Prop({ unique: true, required: true, type: String })
   email: string;
 
-  @Prop({ type: String, default: '/uploads/profile/default.jpg' })
+  @Prop({ type: String, default: '/uploads/profile/default.png' })
   picture: string;
 
   @Prop({ type: String, required: true })
