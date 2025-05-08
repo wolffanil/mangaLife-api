@@ -83,11 +83,15 @@ export class ChapterService {
   async getByMangaId(mangaId: Types.ObjectId) {
     return await this.chapterModel
       .find({ manga: mangaId })
-      .sort({ createdAt: 1 });
+      .sort({ tom: 1, chapter: 1 });
+    // .sort({ createdAt: 1 });
   }
 
   async getById(chapterId: Types.ObjectId) {
-    return await this.chapterModel.findById(chapterId).populate('pages');
+    return await this.chapterModel.findById(chapterId).populate({
+      path: 'pages',
+      options: { sort: { number: 1 } },
+    });
   }
 
   async getChapterByUser(mangaId: Types.ObjectId, userId: Types.ObjectId) {

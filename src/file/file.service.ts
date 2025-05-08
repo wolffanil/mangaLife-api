@@ -3,6 +3,7 @@ import { path } from 'app-root-path';
 import { ensureDir, pathExists, unlink, writeFile } from 'fs-extra';
 import * as AdmZip from 'adm-zip';
 import { join, extname, relative } from 'path';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class FileService {
@@ -32,13 +33,9 @@ export class FileService {
     mangaId: string,
   ): Promise<string[]> {
     const basePath = 'uploads';
-    const folderPath = join(
-      basePath,
-      'mangas',
-      mangaId,
-      folder,
-      String(Date.now()),
-    );
+    const id = uuidv4();
+
+    const folderPath = join(basePath, 'mangas', mangaId, folder, id);
 
     await ensureDir(folderPath);
 
@@ -61,7 +58,7 @@ export class FileService {
 
         await writeFile(filePath, entry.getData());
 
-        return `/${basePath}/mangas/${mangaId}/${folder}/${Date.now() + counter}/${fileName}`.replace(
+        return `/${basePath}/mangas/${mangaId}/${folder}/${id}/${fileName}`.replace(
           /\\/g,
           '/',
         );

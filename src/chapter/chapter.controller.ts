@@ -48,7 +48,7 @@ export class ChapterController {
   async getById(@Param('id') chapterId: Types.ObjectId) {
     const chapter = await this.chapterService.getById(chapterId);
 
-    return chapter;
+    return { chapter };
   }
 
   @Post()

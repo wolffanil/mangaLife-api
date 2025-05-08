@@ -47,7 +47,9 @@ export class PageService {
   }
 
   async createSingle(dto: PageCreateSingleDto) {
-    const lastPage = await this.pageModel.findOne().sort({ number: -1 });
+    const lastPage = await this.pageModel
+      .findOne({ manga: dto.manga, chapter: dto.chapter })
+      .sort({ number: -1 });
 
     return await this.pageModel.create({
       chapter: dto.chapter,
@@ -91,7 +93,7 @@ export class PageService {
     const newNumber = dto.number;
 
     if (currentNumber === newNumber)
-      throw new BadRequestException('Номер страницы не поменялась');
+      throw new BadRequestException('Номер страницы не поменялся');
 
     page.number = newNumber;
 
