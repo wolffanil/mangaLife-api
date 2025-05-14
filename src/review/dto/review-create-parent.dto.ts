@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, IsString, Max, Min } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 import { IsObjectId } from 'class-validator-mongo-object-id';
 import { Types } from 'mongoose';
 

@@ -43,7 +43,7 @@ export class MangaService {
     const cachedManga = await this.cacheManager.get<Manga[]>(
       this.cacheNewManga,
     );
-    if (cachedManga) {
+    if (cachedManga?.length) {
       return cachedManga;
     }
     const mangas = await this.mangaModel
@@ -86,6 +86,8 @@ export class MangaService {
   }
 
   async search(query: string) {
+    await this.checkExistDataInES();
+
     const response: SearchResponse<unknown> =
       await this.elasticsearchService.search({
         index: this.index,
@@ -100,11 +102,40 @@ export class MangaService {
       });
 
     if (response.hits && response.hits.hits) {
-      const mangas = response.hits.hits.map((hit: any) => hit._source);
+      const mangas = response.hits.hits
+        .map((hit: any) => hit._source)
+        .filter((manga) => manga.mangaId != undefined);
 
       return { mangas };
     }
     return [];
+  }
+
+  private async checkExistDataInES() {
+    const { count } = await this.elasticsearchService.count({
+      index: this.index,
+    });
+
+    if (count === 0) {
+      const mangas = await this.mangaModel
+        .find({ createdAt: -1 })
+        .populate('author', 'name');
+      for (const manga of mangas) {
+        const data = {
+          mangaId: manga._id,
+          poster: manga.poster,
+          title: manga.title,
+          description: manga.description,
+          titleRu: manga.titleRu,
+          author: manga?.author?.name,
+        };
+        await this.elasticsearchService.index({
+          index: this.index,
+          id: String(manga._id),
+          body: data,
+        });
+      }
+    }
   }
 
   async create(dto: MangaDto) {
@@ -265,7 +296,6 @@ export class MangaService {
     }
     const mangas = await this.mangaModel
       .find(query)
-      .find({})
       .sort({ updatedAt: -1 })
       .select('_id title titleRu poster updatedAt createdAt');
 
