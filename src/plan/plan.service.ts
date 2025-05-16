@@ -60,7 +60,9 @@ export class PlanService {
     if (sortBy === 'titleEnglishA-Z') sort['manga.title'] = 1;
     else if (sortBy === 'titleRussianA-Я') sort['manga.titleRu'] = 1;
 
-    const match: Record<string, any> = {};
+    const match: Record<string, any> = {
+      user: userId,
+    };
 
     if (searchQuery) {
       match.$or = [
