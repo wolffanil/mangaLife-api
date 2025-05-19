@@ -26,6 +26,7 @@ export class ReasonService {
     const reason = await this.ResonModel.create({
       user: dto.userId,
       text: dto.text,
+      review: dto.reviewId,
     });
 
     return reason;
@@ -50,15 +51,28 @@ export class ReasonService {
   }
 
   async getAll() {
-    const reasons = await this.ResonModel.find()
+    const reasons = (await this.ResonModel.find()
       .sort({ updatedAt: -1 })
-      .populate('user', '_id nickname picture');
+      .populate('user', '_id nickname picture isBan')
+      .populate('review', 'text status createdAt')) as any[];
 
-    return reasons;
+    return reasons?.filter((reson) => reson.user?.isBan !== true) ?? [];
   }
 
-  async deleteAllReasonsUser(userId: Types.ObjectId) {
-    await this.ResonModel.deleteMany({ user: userId });
+  async deleteAllReasonsUser(
+    userId: Types.ObjectId,
+    reasonId?: Types.ObjectId,
+  ) {
+    if (reasonId) {
+      await this.ResonModel.deleteMany({
+        _id: { $ne: reasonId },
+        user: userId,
+      });
+    } else {
+      await this.ResonModel.deleteMany({
+        user: userId,
+      });
+    }
 
     return true;
   }

@@ -13,6 +13,7 @@ import { hash } from 'bcryptjs';
 import { OAuthDto } from 'src/auth/dto/OAuthDto';
 import { ReasonService } from 'src/reason/reason.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { SetBanDto } from './dto/set-ban.dto';
 
 @Injectable()
 export class UserService {
@@ -78,8 +79,8 @@ export class UserService {
     return user;
   }
 
-  async setBan(userId: Types.ObjectId) {
-    await this.reasonService.deleteAllReasonsUser(userId);
+  async setBan(userId: Types.ObjectId, dto: SetBanDto) {
+    await this.reasonService.deleteAllReasonsUser(userId, dto.reasonId);
 
     return await this.UserModel.findByIdAndUpdate(
       userId,
@@ -89,6 +90,8 @@ export class UserService {
   }
 
   async setUnBan(userId: Types.ObjectId) {
+    await this.reasonService.deleteAllReasonsUser(userId);
+
     return await this.UserModel.findByIdAndUpdate(
       userId,
       { isBan: false },
@@ -97,9 +100,9 @@ export class UserService {
   }
 
   async getIsBans() {
-    return await this.UserModel.find({ isBan: true }).select(
-      '_id nickname picture isBan',
-    );
+    return await this.UserModel.find({ isBan: true })
+      .select('_id nickname picture isBan')
+      .populate('reason');
   }
 
   async toggleFavorite(mangaId: Types.ObjectId, user: UserDocument) {

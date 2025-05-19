@@ -6,6 +6,9 @@ export class ReasonDto {
   @IsObjectId({ message: 'Id пользователя невалидный' })
   userId: Types.ObjectId;
 
+  @IsObjectId({ message: 'Id комментария невалидный' })
+  reviewId: Types.ObjectId;
+
   @IsString({ message: 'жалоба должна быть' })
   text: string;
 }

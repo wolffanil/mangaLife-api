@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document, Types } from 'mongoose';
 import * as bcrypt from 'bcryptjs';
 import { Manga } from 'src/manga/schemas/manga.model';
+import { Reason } from 'src/reason/schemas/reason.model';
 
 export enum UserGender {
   MALE = 'мужской',
@@ -16,10 +17,13 @@ export enum UserRole {
 
 export interface UserDocument extends User {
   comparePassword: (candidatePassword: string) => Promise<Boolean>;
+  reason: Reason;
 }
 
 @Schema({
   timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
 })
 export class User extends Document {
   @Prop({ unique: true, required: true, type: String })
@@ -60,3 +64,10 @@ UserSchema.methods.comparePassword = async function (
 ): Promise<boolean> {
   return await bcrypt.compare(candidatePassword, this.password);
 };
+
+UserSchema.virtual('reason', {
+  ref: 'Reason',
+  localField: '_id',
+  foreignField: 'user',
+  justOne: true,
+});

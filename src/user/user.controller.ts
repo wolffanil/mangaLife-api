@@ -6,6 +6,7 @@ import { Types } from 'mongoose';
 import { User } from './decorators/user.decorator';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { UserDocument } from './schemas/user.model';
+import { SetBanDto } from './dto/set-ban.dto';
 
 @Controller('users')
 export class UserController {
@@ -15,6 +16,7 @@ export class UserController {
   @Auth('admin')
   async getBans() {
     const users = await this.userService.getIsBans();
+
     return { users };
   }
 
@@ -48,8 +50,11 @@ export class UserController {
 
   @Patch('/set-ban/:id')
   @Auth('admin')
-  async setBan(@Param('id', IdValidationPipe) userId: Types.ObjectId) {
-    const user = await this.userService.setBan(userId);
+  async setBan(
+    @Param('id', IdValidationPipe) userId: Types.ObjectId,
+    @Body() dto: SetBanDto,
+  ) {
+    const user = await this.userService.setBan(userId, dto);
 
     return { user };
   }

@@ -8,6 +8,13 @@ export class Reason extends Document {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true })
   user: string;
 
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Review',
+    required: true,
+  })
+  review: string;
+
   @Prop({ type: String, required: true })
   text: string;
 }

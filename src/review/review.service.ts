@@ -16,6 +16,7 @@ export class ReviewService {
   ) {}
 
   async create(userId: Types.ObjectId, dto: ReviewCreateDto) {
+    console.log(dto.rating);
     const review = await this.reviewModel.findOneAndUpdate(
       { user: userId, manga: dto.manga },
       {
@@ -30,7 +31,7 @@ export class ReviewService {
     const avarageRating = await this.averageRatingManga(dto.manga);
 
     await this.mangaModel.findByIdAndUpdate(dto.manga, {
-      rating: avarageRating,
+      rating: Math.round(Number(avarageRating)),
     });
 
     return review;
@@ -43,10 +44,12 @@ export class ReviewService {
   }
 
   async changeStatus(reviewId: Types.ObjectId, dto: ReviewChangeStatusDto) {
+    console.log(reviewId, dto.status);
+
     return await this.reviewModel.findOneAndUpdate(
       {
         _id: reviewId,
-        isComplain: true,
+        // isComplain: true,
       },
       {
         status: dto.status,
@@ -101,9 +104,13 @@ export class ReviewService {
       manga: new Types.ObjectId(mangaId),
     });
 
+    const currentRatings = ratingMovie.filter(
+      (rating) => rating?.parent === undefined || null,
+    );
+
     return (
-      ratingMovie.reduce((acc, item) => acc + item.rating, 0) /
-      ratingMovie.length
+      currentRatings.reduce((acc, item) => acc + item.rating, 0) /
+      currentRatings.length
     );
   }
 }
