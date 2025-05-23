@@ -111,16 +111,39 @@ export class MangaService {
     return [];
   }
 
+  public async changeAuthorName() {
+    await this.elasticsearchService.deleteByQuery({
+      index: this.index,
+      body: {
+        query: {
+          match_all: {},
+        },
+      },
+    });
+  }
+
   private async checkExistDataInES() {
+    const indexExists = await this.elasticsearchService.indices.exists({
+      index: this.index,
+    });
+
+    if (!indexExists) {
+      await this.elasticsearchService.indices.create({
+        index: this.index,
+      });
+    }
+
     const { count } = await this.elasticsearchService.count({
       index: this.index,
     });
 
     if (count === 0) {
       const mangas = await this.mangaModel
-        .find({ createdAt: -1 })
+        .find()
+        .sort({ createdAt: -1 })
         .populate('author', 'name');
-      for (const manga of mangas) {
+
+      const indexPromises = mangas.map((manga) => {
         const data = {
           mangaId: manga._id,
           poster: manga.poster,
@@ -129,12 +152,15 @@ export class MangaService {
           titleRu: manga.titleRu,
           author: manga?.author?.name,
         };
-        await this.elasticsearchService.index({
+
+        return this.elasticsearchService.index({
           index: this.index,
           id: String(manga._id),
           body: data,
         });
-      }
+      });
+
+      await Promise.all(indexPromises);
     }
   }
 

@@ -6,17 +6,21 @@ import { EnumPremiumStatus, Premium } from './schemas/premium.model';
 import { Model, Types } from 'mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { PaymentStatusDto } from './dto/payment-status.dto';
-
-const checkout = new YooCheckout({
-  shopId: '1004089',
-  secretKey: 'test_qUhcbZXimd6_7HMm5-krP2cC2wlULSVntG_xjSpKnL4',
-});
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PremiumService {
+  private readonly checkout: YooCheckout;
+
   constructor(
     @InjectModel(Premium.name) private readonly premiumModel: Model<Premium>,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.checkout = new YooCheckout({
+      shopId: configService.getOrThrow<string>('YOOKASSA_SHOP_ID'),
+      secretKey: configService.getOrThrow<string>('YOOKASSA_SECRET_KEY'),
+    });
+  }
 
   async existPremium(userId: Types.ObjectId) {
     const now = new Date();
@@ -41,7 +45,7 @@ export class PremiumService {
 
     const total = 250;
 
-    const payment = await checkout.createPayment({
+    const payment = await this.checkout.createPayment({
       amount: {
         value: total.toFixed(2),
         currency: 'RUB',
@@ -51,7 +55,7 @@ export class PremiumService {
       },
       confirmation: {
         type: 'redirect',
-        return_url: `${process.env.CLIENT_URL}/thanks`,
+        return_url: `${process.env.CLIENT_URL}/`,
       },
       description: `Оплата подписки на сайте MangaLife. Id платежа: #${premium._id}`,
     });
@@ -67,7 +71,7 @@ export class PremiumService {
         },
       };
 
-      return checkout.capturePayment(dto.object.id, capturePayment);
+      return this.checkout.capturePayment(dto.object.id, capturePayment);
     }
 
     if (dto.event === 'payment.succeeded') {

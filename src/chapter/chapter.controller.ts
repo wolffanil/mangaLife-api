@@ -35,12 +35,9 @@ export class ChapterController {
     @User('_id') userId: Types.ObjectId,
     @Param('id', IdValidationPipe) mangaId: Types.ObjectId,
   ) {
-    const chapterInfo = await this.chapterService.getChapterByUser(
-      mangaId,
-      userId,
-    );
+    const chapter = await this.chapterService.getChapterByUser(mangaId, userId);
 
-    return { chapterInfo };
+    return chapter;
   }
 
   @Get(':id')

@@ -7,12 +7,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Author, AuthorDocument } from './schemas/author.model';
 import { Model, Types } from 'mongoose';
 import { AuthorDto } from './dto/author.dto';
+import { MangaService } from 'src/manga/manga.service';
 
 @Injectable()
 export class AuthorService {
   constructor(
     @InjectModel(Author.name)
     private readonly authorModel: Model<AuthorDocument>,
+    private readonly mangaService: MangaService,
   ) {}
 
   async create(dto: AuthorDto) {
@@ -37,6 +39,8 @@ export class AuthorService {
     author.name = dto.name;
 
     await author.save({ validateBeforeSave: true });
+
+    await this.mangaService.changeAuthorName();
 
     return author;
   }

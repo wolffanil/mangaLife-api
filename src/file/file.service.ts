@@ -1,24 +1,24 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { path } from 'app-root-path';
-import { ensureDir, pathExists, unlink, writeFile } from 'fs-extra';
+import { pathExists, unlink } from 'fs-extra';
 import * as AdmZip from 'adm-zip';
-import { join, extname, relative } from 'path';
+import { extname } from 'path';
 import { v4 as uuidv4 } from 'uuid';
+import { StorageService } from 'src/libs/storage/storage.service';
 
 @Injectable()
 export class FileService {
+  constructor(private readonly storageService: StorageService) {}
+
   async saveFile(file: Express.Multer.File, folder: string) {
-    const uploadedFolder = `${path}/uploads/${folder}`;
-
-    await ensureDir(uploadedFolder);
-
     const response = async () => {
-      const originName = `${Date.now()}-${file.originalname}`;
+      const basePath = '/uploads';
+      const originName = `${basePath}/${folder}/${Date.now()}-${file.originalname}`;
 
-      await writeFile(`${uploadedFolder}/${originName}`, file.buffer);
+      await this.storageService.upload(file.buffer, originName, file.mimetype);
 
       return {
-        url: `/uploads/${folder}/${originName}`,
+        url: originName,
       };
     };
 
@@ -32,12 +32,11 @@ export class FileService {
     folder: string = 'pages',
     mangaId: string,
   ): Promise<string[]> {
-    const basePath = 'uploads';
     const id = uuidv4();
 
-    const folderPath = join(basePath, 'mangas', mangaId, folder, id);
+    const basePath = '/uploads';
 
-    await ensureDir(folderPath);
+    const folderPath = `${basePath}/mangas/${mangaId}/${folder}/${id}`;
 
     const zipBuffer = file.buffer;
 
@@ -54,11 +53,15 @@ export class FileService {
       .map(async (entry) => {
         const ext = extname(entry.entryName).toLowerCase();
         const fileName = `${counter++}${ext}`;
-        const filePath = join(folderPath, fileName);
+        const filePath = `${folderPath}/${fileName}`;
 
-        await writeFile(filePath, entry.getData());
+        await this.storageService.upload(
+          entry.getData() as Buffer,
+          filePath,
+          'image/' + ext.split('.')[1],
+        );
 
-        return `/${basePath}/mangas/${mangaId}/${folder}/${id}/${fileName}`.replace(
+        return `${basePath}/mangas/${mangaId}/${folder}/${id}/${fileName}`.replace(
           /\\/g,
           '/',
         );

@@ -20,8 +20,6 @@ async function bootstrap() {
   app.use(helmet.crossOriginResourcePolicy({ policy: 'cross-origin' }));
   app.use(cookieParser());
 
-  // app.use(csurf());
-
   app.setGlobalPrefix('api');
 
   app.enableCors({

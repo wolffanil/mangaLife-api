@@ -39,5 +39,6 @@ import { ScheduleModule } from '@nestjs/schedule';
   ],
   controllers: [MangaController],
   providers: [MangaService],
+  exports: [MangaService],
 })
 export class MangaModule {}

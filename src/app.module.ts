@@ -17,6 +17,7 @@ import { ReviewModule } from './review/review.module';
 import { ChapterModule } from './chapter/chapter.module';
 import { PageModule } from './page/page.module';
 import { PlanModule } from './plan/plan.module';
+import { StorageModule } from './libs/storage/storage.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { PlanModule } from './plan/plan.module';
     ChapterModule,
     PageModule,
     PlanModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

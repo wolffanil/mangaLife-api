@@ -34,23 +34,4 @@ export class VkontakteStrategy extends PassportStrategy(Strategy, 'vkontakte') {
       },
     );
   }
-
-  //   async validate(
-  //     accessToken: string,
-  //     refreshToken: string,
-  //     params: any,
-  //     profile: Profile,
-  //     done: (error: any, user?: any) => void,
-  //   ): Promise<any> {
-  //     console.log(profile, 'Profile');
-  //     const { displayName, emails, photos } = profile;
-
-  //     const user = {
-  //       email: emails[0].value || params.email,
-  //       name: displayName,
-  //       picture: photos[0].value,
-  //     };
-
-  //     done(null, user);
-  //   }
 }

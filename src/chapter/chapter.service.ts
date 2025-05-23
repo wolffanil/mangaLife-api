@@ -84,7 +84,6 @@ export class ChapterService {
     return await this.chapterModel
       .find({ manga: mangaId })
       .sort({ tom: 1, chapter: 1 });
-    // .sort({ createdAt: 1 });
   }
 
   async getById(chapterId: Types.ObjectId) {
@@ -98,18 +97,32 @@ export class ChapterService {
     const existPlan = await this.planSerice.getByMangaId(userId, mangaId);
 
     if (!existPlan) {
-      return await this.chapterModel
+      const chapter = await this.chapterModel
         .findOne()
-        .sort({ createdAt: 1 })
-        .populate('pages');
+        .sort({ tom: 1, chapter: 1 })
+        .populate({
+          path: 'pages',
+          options: { sort: { number: 1 } },
+        });
+
+      return { chapter };
     }
 
     let chapter = await this.chapterModel
       .findOne({ manga: mangaId, chapter: Number(existPlan.chapter) })
-      .populate('pages');
+      .populate({
+        path: 'pages',
+        options: { sort: { number: 1 } },
+      });
 
     //@ts-ignore
-    const chapterInfo = { chapter, currentPage: existPlan.currentPage };
+    const chapterInfo = {
+      chapter,
+      plan: {
+        _id: existPlan._id,
+        currentPage: existPlan.currentPage,
+      },
+    };
 
     return chapterInfo;
   }
