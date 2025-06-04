@@ -34,7 +34,7 @@ export class GenreController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @Auth('admin')
+  @Auth('publish')
   async create(@Body() dto: GenreDto) {
     const genre = await this.genreService.create(dto);
 
@@ -42,7 +42,7 @@ export class GenreController {
   }
 
   @Patch(':id')
-  @Auth('admin')
+  @Auth('publish')
   async update(
     @Param('id', IdValidationPipe) genreId: Types.ObjectId,
     @Body() dto: GenreDto,
@@ -54,7 +54,7 @@ export class GenreController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Auth('admin')
+  @Auth('publish')
   async delete(@Param('id', IdValidationPipe) genreId: Types.ObjectId) {
     return await this.genreService.delete(genreId);
   }

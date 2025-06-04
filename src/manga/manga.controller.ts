@@ -63,7 +63,7 @@ export class MangaController {
 
   @Get('get-for-publish')
   @Auth('publish')
-  async getForAdmin() {
+  async getForPublish() {
     const mangas = await this.mangaService.getForPublish();
 
     return { mangas };

@@ -34,7 +34,7 @@ export class AuthorController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @Auth('admin')
+  @Auth('publish')
   async create(@Body() dto: AuthorDto) {
     const author = await this.authorService.create(dto);
 
@@ -42,7 +42,7 @@ export class AuthorController {
   }
 
   @Patch(':id')
-  @Auth('admin')
+  @Auth('publish')
   async update(
     @Param('id', IdValidationPipe) authorId: Types.ObjectId,
     @Body() dto: AuthorDto,
@@ -54,7 +54,7 @@ export class AuthorController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Auth('admin')
+  @Auth('publish')
   async delete(@Param('id', IdValidationPipe) authorId: Types.ObjectId) {
     return await this.authorService.delete(authorId);
   }
