@@ -103,8 +103,9 @@ export class AuthService {
       httpOnly: true,
       domain: this.configService.get('SERVER_DOMAIN'),
       expires: expiresIn,
-      sameSite: 'lax',
+      sameSite: 'none',
       secure: true,
+      path: '/',
     });
   }
 
@@ -114,7 +115,8 @@ export class AuthService {
       domain: this.configService.get('SERVER_DOMAIN'),
       expires: new Date(0),
       secure: true,
-      sameSite: 'lax',
+      sameSite: 'none',
+      path: '/',
     });
   }
 
