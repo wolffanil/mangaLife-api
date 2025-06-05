@@ -28,6 +28,7 @@ uploads/mangas
 *.launch
 .settings/
 *.sublime-workspace
+.env.example
 
 # IDE - VSCode
 .vscode/*
