@@ -44,7 +44,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @Recaptcha()
+  // @Recaptcha()
   @HttpCode(HttpStatus.OK)
   async login(
     @Body() dto: LoginAuthDto,
