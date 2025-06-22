@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -87,7 +88,10 @@ export class AuthService {
   private async validateUser(dto: LoginAuthDto) {
     const user = await this.userService.getByEmail(dto.email);
 
-    if (!user || !(await user.comparePassword(dto.password)))
+    if (!user?.password)
+      throw new BadRequestException('Пользователь вошёл через соц.сеть');
+
+    if (!user?._id || !(await user.comparePassword(dto.password)))
       throw new NotFoundException('Email или пароль не верны');
 
     if (user.isBan) throw new ForbiddenException('Вы были забанены');
