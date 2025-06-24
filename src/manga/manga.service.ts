@@ -52,7 +52,7 @@ export class MangaService {
       .select('_id title titleRu description poster')
       .limit(15);
 
-    await this.cacheManager.set(this.cacheNewManga, mangas);
+    await this.cacheManager.set(this.cacheNewManga, mangas, 600000);
 
     return mangas;
   }
@@ -206,15 +206,17 @@ export class MangaService {
       titleRu: manga.titleRu,
     };
 
-    const cachedNewManga =
+    let cachedNewManga =
       (await this.cacheManager.get<
         Pick<Manga, '_id' | 'poster' | 'title' | 'titleRu' | 'description'>[]
       >(this.cacheNewManga)) || [];
-    cachedNewManga.unshift(mangaCache);
+    //@ts-ignore
+    cachedNewManga = cachedNewManga.unshift(mangaCache);
+
     if (cachedNewManga.length > 15) {
       cachedNewManga.pop();
     }
-    await this.cacheManager.set(this.cacheNewManga, cachedNewManga);
+    await this.cacheManager.set(this.cacheNewManga, cachedNewManga, 600000);
 
     return manga;
   }
@@ -238,7 +240,7 @@ export class MangaService {
         (m) => m._id !== mangaId.toString(),
       );
 
-      await this.cacheManager.set(this.cacheNewManga, updatedNewManga);
+      await this.cacheManager.set(this.cacheNewManga, updatedNewManga, 600000);
       await this.cacheManager.set(this.cachePopularManga, updatedPopularManga);
     } else {
       const updatedNewManga = cachedNewManga.map((m) =>
@@ -249,7 +251,7 @@ export class MangaService {
         m._id === mangaId.toString() ? manga : m,
       );
 
-      await this.cacheManager.set(this.cacheNewManga, updatedNewManga);
+      await this.cacheManager.set(this.cacheNewManga, updatedNewManga, 600000);
 
       await this.cacheManager.set(this.cachePopularManga, updatedPopularManga);
     }

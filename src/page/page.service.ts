@@ -18,7 +18,7 @@ export class PageService {
     chapterId: Types.ObjectId,
   ) {
     const pages = imagePaths.map((path) => {
-      const match = path.match(/(\d+)\.png$/);
+      const match = path.match(/(\d+)\.(png|jpe?g)$/);
 
       const number = match ? parseInt(match[1], 10) : null;
 
