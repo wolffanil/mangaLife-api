@@ -47,9 +47,6 @@ export class FileService {
 
     const filePromises = extractedFiles
       .filter((entry) => !entry.isDirectory)
-      .filter((entry) =>
-        validExtensions.includes(extname(entry.entryName).toLowerCase()),
-      )
       .map(async (entry) => {
         const ext = extname(entry.entryName).toLowerCase();
         const fileName = `${counter++}${ext}`;
